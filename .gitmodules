@@ -1,0 +1,6 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/nursyah21/boilerplate/
+[submodule "backend"]
+	path = backend
+	url = https://github.com/nursyah21/deno-slim
