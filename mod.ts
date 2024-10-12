@@ -94,7 +94,9 @@ async function main() {
     volumes:
       - 'minio_data:/data/minio'
   `
-      volumes += `minio_data:`
+      volumes += `
+  minio_data:
+  `
     }
 
     if (confirm("mailpit")) {
