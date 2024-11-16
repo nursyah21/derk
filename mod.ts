@@ -1,4 +1,4 @@
-import chalk from "npm:chalk";
+import chalk from "npm:chalk@5.3.0";
 const log = console.log;
 const boldInfo = chalk.bold.blue;
 const info = chalk.blue;
