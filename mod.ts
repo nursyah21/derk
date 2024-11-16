@@ -101,6 +101,21 @@ async function main() {
   `;
     }
 
+    if (confirm("mongodb")) {
+      services += `
+  mongodb:
+    image: mongo:latest
+    container_name: my-mongodb
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - 27017:27017
+  `;
+      volumes += `
+  mongodb_data:
+  `;
+    }
+
     if (confirm("minio")) {
       services += `
   minio:
