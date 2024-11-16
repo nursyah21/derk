@@ -44,7 +44,9 @@ async function main() {
     ],
   }).output();
   if (!successClone) {
-    Deno.removeSync(`./${project}`, { recursive: true });
+    if (project != ".") {
+      Deno.removeSync(`./${project}`, { recursive: true });
+    }
     return log(danger("fail to clone repository"));
   }
 
@@ -60,8 +62,10 @@ async function main() {
   }).output();
 
   try {
-    Deno.removeSync(`./${project}/backend/.git`, { recursive: true });
-    Deno.removeSync(`./${project}/frontend/.git`, { recursive: true });
+    if (project != ".") {
+      Deno.removeSync(`./${project}/backend/.git`, { recursive: true });
+      Deno.removeSync(`./${project}/frontend/.git`, { recursive: true });
+    }
   } catch (_error) {
     return log(danger("remove .git fail"));
   }
@@ -150,7 +154,7 @@ async function main() {
   Deno.writeTextFileSync(`./${project}/deno.json`, denojson);
 
   log(success(`create project success`));
-  // log(boldInfo("\nmove to project folder"));  
+  // log(boldInfo("\nmove to project folder"));
   // log(boldInfo("\ninstall frontend"));
   log(boldInfo("\nstart development"));
   // log(boldInfo("\ncopy and run this code"));
