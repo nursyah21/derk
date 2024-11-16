@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import chalk from "npm:chalk";
 const log = console.log;
 const boldInfo = chalk.bold.blue;
 const info = chalk.blue;
@@ -8,16 +8,11 @@ const success = chalk.green;
 const denojson = `
 {
   "tasks": {
-    "scaffold": "deno run -A --watch mod.ts",
+    "scaffold": "deno run frontend:install && deno run dev",
     "frontend:install": "cd frontend && deno install",
     "frontend:dev": "cd frontend && deno run dev",
     "backend:dev": "cd backend && deno run dev",
-    "dev": "concurrently 'deno run frontend:dev' 'deno run backend:dev'"
-  },
-  "imports": {
-    "@std/assert": "jsr:@std/assert@1",
-    "chalk": "npm:chalk@^5.3.0",
-    "concurrently": "npm:concurrently@^9.0.1"
+    "dev": "deno run -A 'npm:concurrently' 'deno run frontend:dev' 'deno run backend:dev'"
   }
 }
 `;
@@ -155,12 +150,14 @@ async function main() {
   Deno.writeTextFileSync(`./${project}/deno.json`, denojson);
 
   log(success(`create project success`));
-  log(boldInfo("\nmove to project folder"));
-  log(`cd ${project}`);
-
-  log(boldInfo("\ninstall frontend"));
-  log("deno task frontend:install");
+  // log(boldInfo("\nmove to project folder"));  
+  // log(boldInfo("\ninstall frontend"));
   log(boldInfo("\nstart development"));
-  log("deno task dev");
+  // log(boldInfo("\ncopy and run this code"));
+
+  log(`cd ${project}`);
+  log("deno run scaffold");
+  // log("deno task frontend:install");
+  // log("deno task dev");
 }
 main();
