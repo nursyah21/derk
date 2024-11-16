@@ -1,9 +1,9 @@
-import chalk from "chalk"
-const log = console.log
-const boldInfo = chalk.bold.blue
-const info = chalk.blue
-const danger = chalk.red
-const success = chalk.green
+import chalk from "chalk";
+const log = console.log;
+const boldInfo = chalk.bold.blue;
+const info = chalk.blue;
+const danger = chalk.red;
+const success = chalk.green;
 
 const denojson = `
 {
@@ -20,48 +20,70 @@ const denojson = `
     "concurrently": "npm:concurrently@^9.0.1"
   }
 }
-`
+`;
 
 async function main() {
-  log(boldInfo("create new project"))
-  const project = prompt(info("project name:"), "")
+  log(boldInfo("create new project"));
+  const project = prompt(info("project name:"), "");
+
   if (!project) {
-    return log(danger("please write project folder"))
+    return log(danger("please write project folder"));
   }
 
   try {
-    Deno.mkdirSync(project)
+    if (project != ".") Deno.mkdirSync(project);
   } catch (error) {
     if (error instanceof Deno.errors.AlreadyExists) {
-      return log(danger(project, "already exist"))
+      return log(danger(project, "already exist"));
     }
   }
 
-  log(success("clone backend..."))
-  const { success: successClone } = await new Deno.Command("git", { args: ["clone", "--depth", "1", "https://github.com/nursyah21/deno-slim/", `${project}/backend`] }).output()
+  log(success("clone backend..."));
+  const { success: successClone } = await new Deno.Command("git", {
+    args: [
+      "clone",
+      "--depth",
+      "1",
+      "https://github.com/nursyah21/deno-slim/",
+      `${project}/backend`,
+    ],
+  }).output();
   if (!successClone) {
-    Deno.removeSync(`./${project}`, { recursive: true })
-    return log(danger("fail to clone repository"))
+    Deno.removeSync(`./${project}`, { recursive: true });
+    return log(danger("fail to clone repository"));
   }
 
-  log(success("clone frontend..."))
-  await new Deno.Command("git", { args: ["clone", "--depth", "1", "https://github.com/nursyah21/boilerplate", `${project}/frontend`] }).output()
+  log(success("clone frontend..."));
+  await new Deno.Command("git", {
+    args: [
+      "clone",
+      "--depth",
+      "1",
+      "https://github.com/nursyah21/boilerplate",
+      `${project}/frontend`,
+    ],
+  }).output();
 
   try {
-    Deno.removeSync(`./${project}/backend/.git`, { recursive: true })
-    Deno.removeSync(`./${project}/frontend/.git`, { recursive: true })
-  } catch (_error) { return log(danger("remove .git fail")) }
-
-  try {
-    Deno.copyFileSync(`./${project}/backend/.env.example`, `./${project}/backend/.env`)
+    Deno.removeSync(`./${project}/backend/.git`, { recursive: true });
+    Deno.removeSync(`./${project}/frontend/.git`, { recursive: true });
   } catch (_error) {
-    return log(danger("copy .env.example fail"))
+    return log(danger("remove .git fail"));
   }
 
-  const withdocker = confirm("docker compose?")
+  try {
+    Deno.copyFileSync(
+      `./${project}/backend/.env.example`,
+      `./${project}/backend/.env`
+    );
+  } catch (_error) {
+    return log(danger("copy .env.example fail"));
+  }
+
+  const withdocker = confirm("docker compose?");
   if (withdocker) {
-    let services = "services:"
-    let volumes = "volumes:"
+    let services = "services:";
+    let volumes = "volumes:";
 
     if (confirm("postgresql")) {
       services += `
@@ -73,10 +95,10 @@ async function main() {
       - 'postgresql_data:/bitnami/postgresql'
     environment:
       - 'ALLOW_EMPTY_PASSWORD=yes'
-  `
+  `;
       volumes += `
   postgresql_data:
-  `
+  `;
     }
 
     if (confirm("minio")) {
@@ -93,10 +115,10 @@ async function main() {
       MINIO_DEFAULT_BUCKETS: test1
     volumes:
       - 'minio_data:/data/minio'
-  `
+  `;
       volumes += `
   minio_data:
-  `
+  `;
     }
 
     if (confirm("mailpit")) {
@@ -106,21 +128,24 @@ async function main() {
     ports:
       - 1025:1025
       - 8025:8025
-  `
+  `;
     }
 
-    Deno.writeTextFileSync(`./${project}/docker-compose.yml`, `${services}\n${volumes}`)
+    Deno.writeTextFileSync(
+      `./${project}/docker-compose.yml`,
+      `${services}\n${volumes}`
+    );
   }
 
-  Deno.writeTextFileSync(`./${project}/deno.json`, denojson)
+  Deno.writeTextFileSync(`./${project}/deno.json`, denojson);
 
-  log(success(`create project success`))
-  log(boldInfo("\nmove to project folder"))
-  log(`cd ${project}`)
+  log(success(`create project success`));
+  log(boldInfo("\nmove to project folder"));
+  log(`cd ${project}`);
 
-  log(boldInfo("\ninstall frontend"))
-  log("deno task frontend:install")
-  log(boldInfo("\nstart development"))
-  log("deno task dev")
+  log(boldInfo("\ninstall frontend"));
+  log("deno task frontend:install");
+  log(boldInfo("\nstart development"));
+  log("deno task dev");
 }
-main()
+main();
